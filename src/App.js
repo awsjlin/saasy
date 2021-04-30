@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react'
 import Amplify, { API, Auth } from 'aws-amplify';
-import rp from 'request-promise'
 
 const apiName = "https://29x0zqh2mi.execute-api.us-east-1.amazonaws.com/prod/"
 const pathTable = "table"
