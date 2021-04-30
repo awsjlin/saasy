@@ -38,7 +38,10 @@ function getTable(path) {
     //console.log(authToken)
     const funcName = async () => {
       fetch(apiName + path, {
-        method: "GET"
+        method: "GET",
+        headers: {
+          Authorization: data.getIdToken().getJwtToken()
+        }
       }).then(function(response) {
         console.log(response)
         return response.text();
