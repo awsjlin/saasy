@@ -57,19 +57,19 @@ function getTable(path, isBinary) {
       }, function(error) {
         console.log(error.message); //=> String
       })
-      .then(function(myJson)
+      .then(function(blobOrJson)
       {
+        console.log(blobOrJson)
         if (isBinary)
         {
-          console.log(myJson)
-          let blob = new Blob([myJson], {type: 'audio/mp3'});
+          let blob = new Blob([blobOrJson], {type: 'audio/mp3'});
           let url = window.URL.createObjectURL(blob)
           window.audio = new Audio();
           window.audio.src = url;
           window.audio.play();
         }
         else
-          alert(myJson);
+          alert(blobOrJson);
       });
     };
 
