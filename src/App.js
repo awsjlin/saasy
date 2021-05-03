@@ -26,9 +26,9 @@ function App() {
       <header>
         <img src={logo} className="App-logo" alt="logo" />
         <h1>We now have Auth!</h1>
-        <p><button onClick={() => getTable(pathTable)}>Get Table</button></p>
+        <p><button onClick={() => getTable(pathTable)}>Get Movies Table</button></p>
         <p><button onClick={() => getTable(pathTable+queryYear)}>Get Film by Year 2020</button></p>
-        <p><button onClick={() => getTable(pathTranslate)}>Translate</button></p>
+        <p><button onClick={() => getTable(pathTranslate)}>Translate Movies to ZH</button></p>
         <p><button onClick={() => getTable(pathPolly, true)}>Read Movies Table</button></p>
       </header>
       <AmplifySignOut />
