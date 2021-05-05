@@ -5,7 +5,7 @@ import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import Amplify, { Auth } from 'aws-amplify';
 //import Table from './Table.js';
 
-//var apiKey = null
+var apiKey = null
 var tenantId = null
 const apiUrl = "https://29x0zqh2mi.execute-api.us-east-1.amazonaws.com/prod/"
 const pathKey = "key?groupId="
@@ -14,10 +14,8 @@ const pathTranslate = "translate?groupId="
 const pathPolly = "polly?groupId="
 const queryYear = "&year=2001"
 
-
 function App() {
-  const [apiKey, setKey] = useState(null);
-  const [buttons, setButtons] = useState();
+  //const [buttons, setButtons] = useState();
 
   function getRoute(path, isBinary) {
     Auth.currentSession().then(data => {
@@ -44,7 +42,7 @@ function App() {
       }
       //console.log(initData)
       let url = apiUrl + path
-      console.log(url)
+      //console.log(url)
   
       const funcName = async () => {
         fetch(url, initData).then(function(response) {
@@ -67,15 +65,14 @@ function App() {
             window.audio.play();
           }
           else {
-            console.log(apiKey, "$$$$$$$$$$$$$$$$", blobOrJson)
+            //console.log(apiKey, "*********", blobOrJson)
             if (apiKey != null && (blobOrJson !== apiKey)) {
               //console.log("*** Alert!")
               alert(blobOrJson)
             }
             else {
-              console.log("### Set Api Key!", blobOrJson)
-              setKey(blobOrJson)
-              //apiKey = blobOrJson
+              //console.log("### Set Api Key!", blobOrJson)
+              apiKey = blobOrJson
             }
           }
         });
@@ -94,12 +91,12 @@ function App() {
       }
     })
   }
-  setApiKey()
   return (
     <div className="App">
       <header>
         <img src={logo} className="App-logo" alt="logo" />
         <h1>We now have Auth!</h1>
+        {setApiKey()}
         <p><button onClick={() => getRoute(pathTable+tenantId)}>Get Movies Table</button></p>
         <p><button onClick={() => getRoute(pathTable+tenantId+queryYear)}>Get Film by Year 2001</button></p>
         <p><button onClick={() => getRoute(pathTranslate+tenantId)}>Translate Movies to ZH</button></p>
