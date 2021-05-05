@@ -1,57 +1,132 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
-import Amplify, { API, Auth } from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
 //import Table from './Table.js';
 
+//var apiKey = null
+var tenantId = null
 const apiUrl = "https://29x0zqh2mi.execute-api.us-east-1.amazonaws.com/prod/"
 const pathKey = "key?groupId="
 const pathTable = "table?groupId="
 const pathTranslate = "translate?groupId="
 const pathPolly = "polly?groupId="
 const queryYear = "&year=2001"
-const myInit = {
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  response: true
-}
-var apiKey = null
-var tenantId = null
+
 
 function App() {
-  const getPolly = () => {
-    //audio.play()
+  const [apiKey, setKey] = useState(null);
+  const [buttons, setButtons] = useState();
+
+  function getRoute(path, isBinary) {
+    Auth.currentSession().then(data => {
+      //console.log(data.getIdToken().getJwtToken();)
+  
+      let initData = null
+      //console.log(apiKey)
+      if (apiKey == null) {
+        initData = {
+          method: "GET",
+          headers: {
+            Authorization: data.getIdToken().getJwtToken()
+          }
+        }
+      }
+      else {
+        initData = {
+          method: "GET",
+          headers: {
+            Authorization: data.getIdToken().getJwtToken(),
+            'x-api-key': apiKey
+          }
+        }
+      }
+      //console.log(initData)
+      let url = apiUrl + path
+      console.log(url)
+  
+      const funcName = async () => {
+        fetch(url, initData).then(function(response) {
+          if (isBinary)
+            return response.blob();
+          else
+            return response.text();
+        }, function(error) {
+          console.log(error.message);
+        })
+        .then(function(blobOrJson)
+        {
+          //console.log("funcName then: ", blobOrJson)
+          if (isBinary)
+          {
+            let blob = new Blob([blobOrJson], {type: 'audio/mp3'});
+            let url = window.URL.createObjectURL(blob)
+            window.audio = new Audio();
+            window.audio.src = url;
+            window.audio.play();
+          }
+          else {
+            console.log(apiKey, "$$$$$$$$$$$$$$$$", blobOrJson)
+            if (apiKey != null && (blobOrJson !== apiKey)) {
+              //console.log("*** Alert!")
+              alert(blobOrJson)
+            }
+            else {
+              console.log("### Set Api Key!", blobOrJson)
+              setKey(blobOrJson)
+              //apiKey = blobOrJson
+            }
+          }
+        });
+      };
+      return funcName();
+    })
+    .catch(err => console.log(err));
   }
-//js={() => getTable(pathTable)}
+
+  function setApiKey() {
+    Auth.currentAuthenticatedUser().then(user => {
+      if (user.signInUserSession.accessToken.payload["cognito:groups"] !== undefined) {
+        tenantId = user.signInUserSession.accessToken.payload["cognito:groups"][0]
+        //console.log("Auth Tenant group: ", tenantId, pathKey+tenantId)
+        getRoute(pathKey+tenantId)
+      }
+    })
+  }
+  setApiKey()
   return (
     <div className="App">
       <header>
         <img src={logo} className="App-logo" alt="logo" />
         <h1>We now have Auth!</h1>
-        {setApiKey()}
         <p><button onClick={() => getRoute(pathTable+tenantId)}>Get Movies Table</button></p>
         <p><button onClick={() => getRoute(pathTable+tenantId+queryYear)}>Get Film by Year 2001</button></p>
         <p><button onClick={() => getRoute(pathTranslate+tenantId)}>Translate Movies to ZH</button></p>
         <p><button onClick={() => getRoute(pathPolly+tenantId, true)}>Read Movies Table</button></p>
+        <br></br>
       </header>
       <AmplifySignOut />
     </div>
   );
 } 
 
+//
+//         <p><button onClick={signOut()}>Sign out</button></p>
 //        <Table />
 
-function setApiKey() {
-  Auth.currentAuthenticatedUser().then(user => {
-    tenantId = user.signInUserSession.accessToken.payload["cognito:groups"][0]
-    //console.log("Auth Tenant group: ", tenantId, pathKey+tenantId)
-    getRoute(pathKey+tenantId)
-  })
-}
+/*async function signOut() {
+  try {
+      const {authState, authData} = this.props
+      apiKey = null
+      await Auth.signOut().then(() => {
+      });
+  } catch (error) {
+      console.log('error signing out: ', error);
+  }
+}*/
 
-function renderTableData(path, isBinary) {
+/*function renderTableData(path, isBinary) {
   return getRoute(path, isBinary).map((movie, index) => {
     const { year, title } = movie
     return (
@@ -61,70 +136,8 @@ function renderTableData(path, isBinary) {
       </tr>
     )
   })
-}
+}*/
 
 //  if (typeof isCharged !== 'undefined') 
-function getRoute(path, isBinary) {
-  Auth.currentSession().then(data => {
-    //console.log(data.getIdToken().getJwtToken();)
-
-    let initData = null
-    //console.log(apiKey)
-    if (apiKey == null) {
-      initData = {
-        method: "GET",
-        headers: {
-          Authorization: data.getIdToken().getJwtToken()
-        }
-      }
-    }
-    else {
-      initData = {
-        method: "GET",
-        headers: {
-          Authorization: data.getIdToken().getJwtToken(),
-          'x-api-key': apiKey
-        }
-      }
-    }
-    //console.log(initData)
-    let url = apiUrl + path
-    console.log(url)
-
-    const funcName = async () => {
-      fetch(url, initData).then(function(response) {
-        if (isBinary)
-          return response.blob();
-        else
-          return response.text();
-      }, function(error) {
-        console.log(error.message);
-      })
-      .then(function(blobOrJson)
-      {
-        console.log(blobOrJson)
-        if (isBinary)
-        {
-          let blob = new Blob([blobOrJson], {type: 'audio/mp3'});
-          let url = window.URL.createObjectURL(blob)
-          window.audio = new Audio();
-          window.audio.src = url;
-          window.audio.play();
-        }
-        else
-          if (apiKey != null && (blobOrJson != apiKey)) {
-            //console.log("*** Alert!")
-            alert(blobOrJson)
-          }
-          else {
-            //console.log("### Set Api Key!")
-            apiKey = blobOrJson
-          }
-      });
-    };
-    return funcName();
-  })
-  .catch(err => console.log(err));
-}
 
 export default withAuthenticator(App);
