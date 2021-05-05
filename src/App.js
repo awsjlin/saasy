@@ -15,7 +15,7 @@ const pathPolly = "polly?groupId="
 const queryYear = "&year=2001"
 
 function App() {
-  //const [buttons, setButtons] = useState();
+  const [lang, setLang] = useState(null);
 
   function getRoute(path, isBinary) {
     Auth.currentSession().then(data => {
@@ -84,12 +84,23 @@ function App() {
 
   function setApiKey() {
     Auth.currentAuthenticatedUser().then(user => {
-      if (user.signInUserSession.accessToken.payload["cognito:groups"] !== undefined) {
+      if (user.signInUserSession.accessToken.payload["cognito:groups"] !== 'undefined') {
         tenantId = user.signInUserSession.accessToken.payload["cognito:groups"][0]
         //console.log("Auth Tenant group: ", tenantId, pathKey+tenantId)
         getRoute(pathKey+tenantId)
       }
     })
+  }
+
+  function checkLang() {
+    //console.log(lang)
+    let path = pathTranslate+tenantId
+    if (lang != null && typeof lang !== 'undefined' && lang !== '') {
+      let check = path+"&lang="+lang
+      getRoute(pathTranslate+tenantId+"&lang="+lang)
+    } else {
+      getRoute(path)
+    }
   }
   return (
     <div className="App">
@@ -99,7 +110,8 @@ function App() {
         {setApiKey()}
         <p><button onClick={() => getRoute(pathTable+tenantId)}>Get Movies Table</button></p>
         <p><button onClick={() => getRoute(pathTable+tenantId+queryYear)}>Get Film by Year 2001</button></p>
-        <p><button onClick={() => getRoute(pathTranslate+tenantId)}>Translate Movies to ZH</button></p>
+        <p><button onClick={checkLang}>Translate Movies</button>
+        <input type="text" placeholder="Language" onChange={e => setLang(e.target.value)} /></p>
         <p><button onClick={() => getRoute(pathPolly+tenantId, true)}>Read Movies Table</button></p>
         <br></br>
       </header>
