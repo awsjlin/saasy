@@ -15,7 +15,8 @@ const pathPolly = "polly?groupId="
 const queryYear = "&year=2001"
 
 function App() {
-  const [lang, setLang] = useState(null);
+  const [lang, setLang] = useState();
+  const [year, setYear] = useState();
 
   function getRoute(path, isBinary) {
     Auth.currentSession().then(data => {
@@ -92,8 +93,18 @@ function App() {
     })
   }
 
+  function checkYear() {
+    let path = pathTable + tenantId
+    if (year != null && typeof year !== 'undefined' && year !== '') {
+      let check = path+"&year="+year
+      getRoute(path + "&year="+year)
+    } else {
+      getRoute(path + queryYear)
+    }
+
+  }
+
   function checkLang() {
-    //console.log(lang)
     let path = pathTranslate+tenantId
     if (lang != null && typeof lang !== 'undefined' && lang !== '') {
       let check = path+"&lang="+lang
@@ -102,6 +113,7 @@ function App() {
       getRoute(path)
     }
   }
+
   return (
     <div className="App">
       <header>
@@ -109,7 +121,8 @@ function App() {
         <h1>We now have Auth!</h1>
         {setApiKey()}
         <p><button onClick={() => getRoute(pathTable+tenantId)}>Get Movies Table</button></p>
-        <p><button onClick={() => getRoute(pathTable+tenantId+queryYear)}>Get Film by Year 2001</button></p>
+        <p><button onClick={checkYear}>Get Film by Year</button>
+        <input type="text" placeholder="Year" onChange={e => setYear(e.target.value)} /></p>
         <p><button onClick={checkLang}>Translate Movies</button>
         <input type="text" placeholder="Language" onChange={e => setLang(e.target.value)} /></p>
         <p><button onClick={() => getRoute(pathPolly+tenantId, true)}>Read Movies Table</button></p>
