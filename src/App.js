@@ -85,7 +85,7 @@ function App() {
 
   function setApiKey() {
     Auth.currentAuthenticatedUser().then(user => {
-      if (user.signInUserSession.accessToken.payload["cognito:groups"] !== 'undefined') {
+      if (typeof user.signInUserSession.accessToken.payload["cognito:groups"] !== 'undefined') {
         tenantId = user.signInUserSession.accessToken.payload["cognito:groups"][0]
         //console.log("Auth Tenant group: ", tenantId, pathKey+tenantId)
         getRoute(pathKey+tenantId)
