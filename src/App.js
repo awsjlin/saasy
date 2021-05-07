@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import { withAuthenticator, AmplifySignOut } from '@aws-amplify/ui-react';
 import Amplify, { Auth } from 'aws-amplify';
-//import Table from './Table.js';
 
 var apiKey = null
 var tenantId = null
@@ -41,7 +40,7 @@ function App() {
           }
         }
       }
-      //console.log(initData)
+      console.log(initData)
       let url = apiUrl + path
       //console.log(url)
   
@@ -68,8 +67,8 @@ function App() {
           else {
             //console.log(apiKey, "*********", blobOrJson)
             if (apiKey != null && (blobOrJson !== apiKey)) {
-              //console.log("*** Alert!")
-              alert(blobOrJson)
+              if (!path.includes("key"))
+                alert(blobOrJson)
             }
             else {
               //console.log("### Set Api Key!", blobOrJson)
@@ -132,21 +131,6 @@ function App() {
     </div>
   );
 } 
-
-//
-//         <p><button onClick={signOut()}>Sign out</button></p>
-//        <Table />
-
-/*async function signOut() {
-  try {
-      const {authState, authData} = this.props
-      apiKey = null
-      await Auth.signOut().then(() => {
-      });
-  } catch (error) {
-      console.log('error signing out: ', error);
-  }
-}*/
 
 /*function renderTableData(path, isBinary) {
   return getRoute(path, isBinary).map((movie, index) => {
